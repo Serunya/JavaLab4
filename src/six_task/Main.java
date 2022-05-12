@@ -1,100 +1,76 @@
 package six_task;
 
+import fife_task.GenericPairBag;
 import first_task.Pair;
-import four_task.GPairBag;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-    Command[] bag;
-    int n; // Кол-во комманд
-    int index = 0;
+    GenericPairBag<String,String> bag = new GenericPairBag<>();
+    String[] list;
     Main(int n){
-        if(n %2 == 0 && n > 0)
-            this.n = n;
-        else
-            this.n = 8;
-        this.bag = new Command[this.n];
-    }
-
-    public void add_command(Command command){
-        Random rand = new Random();
-        int pos = (int)Math.round(Math.random()*(n-1));
-        if(bag[pos] == null){
-            bag[pos] = command;
+        if((n > 0) && ((n & (n - 1)) == 0)){
+            list = new String[n];
         }
         else {
-            for(Object v:bag){
-                if(v == null){
-                    v = command;
-                }
+            System.out.println("Неверно введено кол-во комманд - автоматически установленно 4");
+            list = new String[4];
+        }
+    }
+    public void add_command(String name_command){
+        Random rand = new Random();
+        while (true) {
+            int pos = rand.nextInt(0, list.length);
+            if (list[pos] == null) {
+                list[pos] = name_command;
+                break;
             }
         }
     }
 
-    public void setN(int n) {
-        this.n = n;
-        bag = new Command[n];
+    public void create_pair_command(){
+        for(int i = 0; i < list.length;i+=2){
+            bag.add_element(new Pair<>(list[i],list[i+1]));
+        }
     }
 
-    private Pair<Command,Command> get_command(){
-        Pair pair = new Pair<>(bag[index],bag[++index]);
-        index++;
-        if(index == n){
-            index = 0;
-        }
-        return pair;
+    public Pair get_pair(int pos){
+        return bag.get_element(pos);
     }
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Добро пожаловать на турнир.");
-        System.out.println("Введите количество комманд: ");
+        System.out.print("Введите количество комманд: ");
         int n = scanner.nextInt();
-        System.in.skip(2);
+        scanner.nextLine();
         Main bag = new Main(n);
-        for(int i = 0; i < n; i++){
-            System.out.println("Введите название команды " + i + ": ");
+        n = bag.list.length;
+        for(int i = 0; i < n; i++) {
+            System.out.print("Введите название команды " + i + ": ");
             String name = scanner.nextLine();
-            bag.add_command(new Command(name));
+            bag.add_command(name);
         }
-        for(int k = 0; k < n/2;k++) {
-            Main temp = new Main(bag.n/2);
-            for (int i = 0; i < n; i += 2) {
-                Pair pair = bag.get_command();
-                System.out.println("Соревнуются комманды 1: " + pair.getFirst().toString() + " И 2: " + pair.getSecond().toString());
+        while(n > 1) {
+            bag.create_pair_command();
+            n = n / 2;
+            Main temp = new Main(n);
+            for (int i = 0; i < n; i++) {
+                Pair<String, String> pair = bag.get_pair(i);
+                System.out.println("Соревнуются комманды 1: " + pair.getFirst() + " И 2: " + pair.getSecond());
                 System.out.println("Выберите кто победил: ");
                 int winner = scanner.nextInt();
-                switch (winner){
-                    case 1:
-                        temp.add_command((Command) pair.getFirst());
-                        break;
-                    case 2:
-                        temp.add_command((Command) pair.getSecond());
-                        break;
-                    default:
-                        System.out.println("Ну всё типо ошибка - конец проги");
-                        return;
+                if(winner == 1){
+                    temp.add_command(pair.getFirst());
+                }
+                if(winner == 2){
+                    temp.add_command(pair.getSecond());
                 }
             }
             bag = temp;
         }
-
-    }
-
-
-    private static class Command{
-        public String name;
-        Command(String name){
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
+        System.out.println("Победила команда: " + bag.list[0]);
     }
 }

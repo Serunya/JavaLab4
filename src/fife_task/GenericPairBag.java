@@ -7,11 +7,11 @@ import java.util.ArrayList;
 public class GenericPairBag<T1,T2>{
     ArrayList<Pair<T1,T2>> list = new ArrayList<>();
 
-    void add_element(Pair<T1,T2> element){
+    public void add_element(Pair<T1,T2> element){
         list.add(element);
     }
 
-    Pair<T1, T2> get_element(int pos){
+    public Pair<T1, T2> get_element(int pos){
         return list.get(pos);
     }
 }
