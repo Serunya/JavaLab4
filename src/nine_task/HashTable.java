@@ -3,32 +3,36 @@ package nine_task;
 import java.util.ArrayList;
 
 public class HashTable<T extends HashValue> {
-    ArrayList<T> table;
+    ArrayList<ArrayList<T>> table;
     HashFunction hash;
     public HashTable(HashFunction hash){
         this.hash = hash;
         table = new ArrayList<>(hash.size);
-        for (int i = 0; i < hash.size; i++) table.add(null);
-    }
-
-    public T get(int hash_sum){
-        return table.get(hash_sum);
+        for (int i = 0; i < hash.size; i++) table.add(new ArrayList<>());
     }
 
     public T find(Object value){
-        T find_element = null;
-        for(T v: table){
-            if(v != null){
+        int hash_sum = hash.hash(value);
+        ArrayList<T> table_value = table.get(hash_sum);
+        if(table_value.isEmpty()){
+            return null;
+        }
+        if(table_value.size() == 1){
+            return table_value.get(0);
+        }
+        else{
+            for(T v:table_value){
                 if(v.contains(value)){
-                    find_element = v;
+                    return v;
                 }
             }
         }
-        return find_element;
+        return null;
     }
 
     public void add(T value){
-        table.set(hash.hash(value), value);
+        int hash_sum = hash.hash(value.toString());
+        table.get(hash_sum).add(value);
     }
 
 }

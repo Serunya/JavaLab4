@@ -21,9 +21,13 @@ public class Person implements HashValue<String> {
         return second_name;
     }
 
+    public String input() {
+        return "Моё имя: " + first_name + "\nМне " + age + " лет.";
+    }
+
     @Override
     public String toString() {
-        return "Моё имя: " + first_name + "\nМне " + age + " лет.";
+        return second_name;
     }
 
     @Override
